@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commuters.MetroManila - Your Ultimate Transportation Guide</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚊</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --pastel-pink: #FFD6E8;
+            --pastel-yellow: #FFF2CC;
+            --light-purple: #E6D7FF;
+            --dark-text: #4A4A4A;
+            --white: #FFFFFF;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pastel-pink) 0%, var(--pastel-yellow) 50%, var(--light-purple) 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark-text);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px var(--shadow);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--light-purple) 0%, var(--pastel-pink) 100%);
+            color: var(--dark-text);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            opacity: 0.3;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8);
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+        
+        .main-content {
+            padding: 50px;
+        }
+        
+        .route-planner {
+            background: linear-gradient(135deg, var(--pastel-yellow) 0%, var(--white) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 3px solid var(--pastel-pink);
+            box-shadow: 0 15px 30px var(--shadow);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        select, button {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid var(--light-purple);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--pastel-pink);
+            box-shadow: 0 0 0 4px rgba(255, 214, 232, 0.3);
+            transform: scale(1.02);
+        }
+        
+        .route-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .plan-route-btn {
+            background: linear-gradient(135deg, var(--pastel-pink), var(--light-purple));
+            color: var(--dark-text);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .plan-route-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px var(--shadow);
+            background: linear-gradient(135deg, var(--light-purple), var(--pastel-pink));
+        }
+        
+        .results {
+            margin-top: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .results.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .route-option {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-left: 8px solid var(--pastel-pink);
+            box-shadow: 0 10px 25px var(--shadow);
+            transition: all 0.3s ease;
+        }
+        
+        .route-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-left-color: var(--light-purple);
+        }
+        
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .transport-mode {
+            background: linear-gradient(135deg, var(--light-purple), var(--pastel-pink));
+            color: var(--dark-text);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .route-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-left: 20px;
+        }
+        
+        .fare-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .fare {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #2E8B57;
+            background: var(--pastel-yellow);
+            padding: 8px 16px;
+            border-radius: 15px;
+        }
+        
+        .congestion {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .low { 
+            background: #E8F5E8; 
+            color: #2E8B57; 
+            border: 2px solid #90EE90;
+        }
+        
+        .medium { 
+            background: #FFF8E1; 
+            color: #FF8C00; 
+            border: 2px solid #FFD700;
+        }
+        
+        .high { 
+            background: #FFEBEE; 
+            color: #DC143C; 
+            border: 2px solid #FF6B6B;
+        }
+        
+        .route-details {
+            color: var(--dark-text);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+        
+        .detail-item {
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .detail-item strong {
+            color: var(--dark-text);
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, var(--pastel-yellow) 0%, var(--white) 100%);
+            border-radius: 12px;
+            border-left: 4px solid var(--light-purple);
+            position: relative;
+        }
+        
+        .step-number {
+            background: var(--pastel-pink);
+            color: var(--dark-text);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-right: 15px;
+        }
+        
+        .specific-location {
+            color: #4A90E2;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background: var(--light-purple);
+            padding: 30px;
+            text-align: center;
+            color: var(--dark-text);
+        }
+        
+        .footer-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .footer-tagline {
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .route-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .route-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .logo {
+                font-size: 2.2rem;
+            }
+            
+            .main-content {
+                padding: 30px;
+            }
+            
+            .route-planner {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <div class="logo">🚊 Commuters.MetroManila</div>
+                <div class="tagline">Your Ultimate Metro Manila Transportation Guide</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="route-planner">
+                <h2 class="section-title">📍 Plan Your Route</h2>
+                
+                <div class="route-inputs">
+                    <div class="form-group">
+                        <label for="from">🚩 From (Origin City)</label>
+                        <select id="from">
+                            <option value="">Select origin city</option>
+                            <option value="manila">Manila</option>
+                            <option value="quezon">Quezon City</option>
+                            <option value="makati">Makati</option>
+                            <option value="pasig">Pasig</option>
+                            <option value="taguig">Taguig (BGC)</option>
+                            <option value="mandaluyong">Mandaluyong</option>
+                            <option value="san_juan">San Juan</option>
+                            <option value="caloocan">Caloocan</option>
+                            <option value="malabon">Malabon</option>
+                            <option value="navotas">Navotas</option>
+                            <option value="valenzuela">Valenzuela</option>
+                            <option value="marikina">Marikina</option>
+                            <option value="paranaque">Parañaque</option>
+                            <option value="las_pinas">Las Piñas</option>
+                            <option value="muntinlupa">Muntinlupa</option>
+                            <option value="pateros">Pateros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="to">🎯 To (Destination City)</label>
+                        <select id="to">
+                            <option value="">Select destination city</option>
+                            <option value="manila">Manila</option>
+                            <option value="quezon">Quezon City</option>
+                            <option value="makati">Makati</option>
+                            <option value="pasig">Pasig</option>
+                            <option value="taguig">Taguig (BGC)</option>
+                            <option value="mandaluyong">Mandaluyong</option>
+                            <option value="san_juan">San Juan</option>
+                            <option value="caloocan">Caloocan</option>
+                            <option value="malabon">Malabon</option>
+                            <option value="navotas">Navotas</option>
+                            <option value="valenzuela">Valenzuela</option>
+                            <option value="marikina">Marikina</option>
+                            <option value="paranaque">Parañaque</option>
+                            <option value="las_pinas">Las Piñas</option>
+                            <option value="muntinlupa">Muntinlupa</option>
+                            <option value="pateros">Pateros</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="plan-route-btn" onclick="planRoute()">🗺️ Find Best Routes</button>
+            </div>
+            
+            <div id="results" class="results"></div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-brand">Commuters.MetroManila</div>
+            <div class="footer-tagline">Making Metro Manila commuting easier, one route at a time</div>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced route database with specific stations and terminals
+        const routeDatabase = {
+            'manila-makati': [
+                {
+                    mode: 'LRT-1',
+                    type: 'rail',
+                    route: 'UN Avenue → Ayala',
+                    fare: 25,
+                    duration: '12 mins',
+                    congestion: 'low',
+                    steps: [
+                        'Walk to <span class="specific-location">UN Avenue LRT-1 Station</span> (Manila)',
+                        'Board LRT-1 train heading south',
+                        'Travel 4 stations: Pedro Gil → Quirino → Vito Cruz → EDSA',
+                        'Alight at <span class="specific-location">EDSA Station</span>',
+                        'Transfer to <span class="specific-location">MRT-3 Taft Avenue Station</span>',
+                        'Board MRT-3 train heading north',
+                        'Alight at <span class="specific-location">Ayala Station</span> (Makati)',
+                        'Walk to your destination in Makati CBD'
+                    ]
+                },
+                {
+                    mode: 'Jeepney',
+                    type: 'road',
+                    route: 'Taft Avenue → Ayala Avenue',
+                    fare: 18,
+                    duration: '35-45 mins',
+                    congestion: 'high',
+                    steps: [
+                        'Walk to <span class="specific-location">Taft Avenue (near LRT stations)</span>',
+                        'Board Manila-Makati jeepney',
+                        'Travel via Taft Avenue → Gil Puyat Avenue',
+                        'Pass through: Pasay → Makati border',
+                        'Alight at <span class="specific-location">Ayala Avenue, Makati</span>',
+                        'Walk to your final destination'
+                    ]
+                }
+            ],
+            'quezon-makati': [
+                {
+                    mode: 'MRT-3',
+                    type: 'rail',
+                    route: 'Quezon Avenue → Ayala',
+                    fare: 28,
+                    duration: '25 mins',
+                    congestion: 'medium',
+                    steps: [
+                        'Walk to <span class="specific-location">Quezon Avenue MRT-3 Station</span>',
+                        'Board MRT-3 train heading south',
+                        'Travel 8 stations through: Kamuning → Cubao → Santolan → Ortigas → Shaw → Boni → Guadalupe',
+                        'Alight at <span class="specific-location">Ayala Station</span>',
+                        'Walk to your destination in Makati'
+                    ]
+                },
+                {
+                    mode: 'Jeepney + Bus',
+                    type: 'mixed',
+                    route: 'EDSA Cubao → Ayala',
+                    fare: 35,
+                    duration: '50-70 mins',
+                    congestion: 'high',
+                    steps: [
+                        'Take jeepney to <span class="specific-location">EDSA-Cubao Terminal</span>',
+                        'Board EDSA Carousel Bus at <span class="specific-location">Cubao Station</span>',
+                        'Travel via EDSA dedicated bus lanes',
+                        'Pass through: Santolan → Ortigas → Shaw → Guadalupe',
+                        'Alight at <span class="specific-location">Ayala Station</span>',
+                        'Walk to your destination'
+                    ]
+                }
+            ],
+            'manila-quezon': [
+                {
+                    mode: 'LRT-2 + MRT-3',
+                    type: 'rail',
+                    route: 'Recto → Cubao → QC',
+                    fare: 32,
+                    duration: '35 mins',
+                    congestion: 'medium',
+                    steps: [
+                        'Walk to <span class="specific-location">Recto LRT-2 Station</span>',
+                        'Board LRT-2 train heading east',
+                        'Travel 2 stations: Legarda → Pureza',
+                        'Alight at <span class="specific-location">Cubao LRT-2 Station</span>',
+                        'Walk to <span class="specific-location">Cubao MRT-3 Station</span>',
+                        'Board MRT-3 train heading north',
+                        'Alight at <span class="specific-location">Quezon Avenue Station</span>',
+                        'Walk to your destination in QC'
+                    ]
+                },
+                {
+                    mode: 'Jeepney',
+                    type: 'road',
+                    route: 'Divisoria → Fairview',
+                    fare: 22,
+                    duration: '60-80 mins',
+                    congestion: 'high',
+                    steps: [
+                        'Walk to <span class="specific-location">Divisoria Jeepney Terminal</span>',
+                        'Board Divisoria-Fairview jeepney',
+                        'Travel via Recto → España Boulevard',
+                        'Pass through: Santa Cruz → Sampaloc → Quezon City border',
+                        'Continue via Commonwealth Avenue',
+                        'Alight at <span class="specific-location">Fairview Terminal</span> or your stop'
+                    ]
+                }
+            ],
+            'makati-taguig': [
+                {
+                    mode: 'BGC Bus',
+                    type: 'bus',
+                    route: 'Ayala → BGC',
+                    fare: 15,
+                    duration: '15-20 mins',
+                    congestion: 'low',
+                    steps: [
+                        'Walk to <span class="specific-location">Ayala MRT Station BGC Bus Stop</span>',
+                        'Board BGC Bus (Route B1 or B2)',
+                        'Travel via Ayala Avenue → McKinley Road',
+                        'Pass through: Gate 3 → High Street → The Fort',
+                        'Alight at your BGC destination stop'
+                    ]
+                },
+                {
+                    mode: 'UV Express',
+                    type: 'road',
+                    route: 'Makati → BGC',
+                    fare: 25,
+                    duration: '10-15 mins',
+                    congestion: 'low',
+                    steps: [
+                        'Walk to <span class="specific-location">Makati UV Express Terminal (Glorietta)</span>',
+                        'Board Makati-BGC UV Express',
+                        'Express route via C5 or Kalayaan Avenue',
+                        'Alight at <span class="specific-location">BGC Terminal (Market! Market!)</span>',
+                        'Transfer to BGC bus or walk to destination'
+                    ]
+                }
+            ],
+            'pasig-manila': [
+                {
+                    mode: 'Jeepney',
+                    type: 'road',
+                    route: 'Crossing → Quiapo',
+                    fare: 20,
+                    duration: '45-60 mins',
+                    congestion: 'high',
+                    steps: [
+                        'Walk to <span class="specific-location">Pasig Crossing Jeepney Terminal</span>',
+                        'Board Crossing-Quiapo jeepney',
+                        'Travel via Shaw Boulevard → Mandaluyong',
+                        'Cross <span class="specific-location">Pasig River via Jones Bridge</span>',
+                        'Continue to <span class="specific-location">Quiapo, Manila</span>',
+                        'Walk to your final destination'
+                    ]
+                },
+                {
+                    mode: 'MRT-3 + LRT-1',
+                    type: 'rail',
+                    route: 'Shaw → Taft → Manila',
+                    fare: 28,
+                    duration: '35 mins',
+                    congestion: 'medium',
+                    steps: [
+                        'Walk to <span class="specific-location">Shaw Boulevard MRT-3 Station</span>',
+                        'Board MRT-3 train heading south',
+                        'Travel 4 stations: Boni → Guadalupe → Buendia → Ayala',
+                        'Continue to <span class="specific-location">Taft Avenue Station</span>',
+                        'Transfer to LRT-1',
+                        'Board LRT-1 train heading north',
+                        'Alight at your Manila destination station'
+                    ]
+                }
+            ],
+            'caloocan-manila': [
+                {
+                    mode: 'LRT-1',
+                    type: 'rail',
+                    route: 'Monumento → UN Avenue',
+                    fare: 30,
+                    duration: '25 mins',
+                    congestion: 'low',
+                    steps: [
+                        'Walk to <span class="specific-location">Monumento LRT-1 Station</span>',
+                        'Board LRT-1 train heading south',
+                        'Travel through: 5th Avenue → R. Papa → Abad Santos → Blumentritt',
+                        'Continue: Tayuman → Bambang → Doroteo Jose → Carriedo → Central Terminal',
+                        'Alight at <span class="specific-location">UN Avenue Station</span> or earlier stops'
+                    ]
+                },
+                {
+                    mode: 'Jeepney',
+                    type: 'road',
+                    route: 'Monumento → Divisoria',
+                    fare: 18,
+                    duration: '40-60 mins',
+                    congestion: 'high',
+                    steps: [
+                        'Walk to <span class="specific-location">Monumento Jeepney Terminal</span>',
+                        'Board Monumento-Divisoria jeepney',
+                        'Travel via A. Mabini → Rizal Avenue',
+                        'Pass through: Grace Park → Santa Cruz',
+                        'Alight at <span class="specific-location">Divisoria Terminal, Manila</span>'
+                    ]
+                }
+            ]
+        };
+
+        function planRoute() {
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            
+            if (!from || !to) {
+                alert('Please select both origin and destination cities');
+                return;
+            }
+            
+            if (from === to) {
+                alert('Origin and destination cannot be the same city');
+                return;
+            }
+            
+            const routeKey = `${from}-${to}`;
+            const reverseRouteKey = `${to}-${from}`;
+            
+            let routes = routeDatabase[routeKey] || routeDatabase[reverseRouteKey];
+            
+            if (!routes) {
+                routes = generateGenericRoutes(from, to);
+            }
+            
+            displayResults(routes, from, to);
+        }
+        
+        function generateGenericRoutes(from, to) {
+            const fromName = document.querySelector(`option[value="${from}"]`).textContent;
+            const toName = document.querySelector(`option[value="${to}"]`).textContent;
+            
+            const baseDistance = Math.random() * 15 + 5;
+            const congestionLevels = ['low', 'medium', 'high'];
+            
+            return [
+                {
+                    mode: 'Jeepney',
+                    type: 'road',
+                    route: `${fromName} → ${toName}`,
+                    fare: Math.ceil(12 + baseDistance * 2),
+                    duration: `${Math.ceil(baseDistance * 3)}-${Math.ceil(baseDistance * 4)} mins`,
+                    congestion: congestionLevels[Math.floor(Math.random() * 3)],
+                    steps: [
+                        `Walk to <span class="specific-location">${fromName} Main Terminal</span>`,
+                        `Board ${fromName}-${toName} jeepney`,
+                        `Travel via main connecting roads`,
+                        `Pass through intermediate barangays`,
+                        `Alight at <span class="specific-location">${toName} Terminal</span>`,
+                        'Walk to your final destination'
+                    ]
+                },
+                {
+                    mode: 'Bus + UV Express',
+                    type: 'mixed',
+                    route: `${fromName} → EDSA → ${toName}`,
+                    fare: Math.ceil(25 + baseDistance * 2.5),
+                    duration: `${Math.ceil(baseDistance * 2)}-${Math.ceil(baseDistance * 3)} mins`,
+                    congestion: 'medium',
+                    steps: [
+                        `Take connecting transport to <span class="specific-location">EDSA</span>`,
+                        `Board EDSA bus or UV Express`,
+                        `Travel via EDSA main corridor`,
+                        `Transfer to local transport for ${toName}`,
+                        `Arrive at destination in ${toName}`
+                    ]
+                }
+            ];
+        }
+        
+        function displayResults(routes, from, to) {
+            const fromName = document.querySelector(`option[value="${from}"]`).textContent;
+            const toName = document.querySelector(`option[value="${to}"]`).textContent;
+            
+            const resultsDiv = document.getElementById('results');
+            
+            let html = `
+                <h2 style="color: var(--dark-text); margin-bottom: 30px; text-align: center;">
+                    🛣️ Best Routes from ${fromName} to ${toName}
+                </h2>
+            `;
+            
+            routes.forEach((route, index) => {
+                html += `
+                    <div class="route-option">
+                        <div class="route-header">
+                            <div>
+                                <span class="transport-mode">${route.mode}</span>
+                                <span class="route-title">${route.route}</span>
+                            </div>
+                            <div class="fare-info">
+                                <div class="fare">₱${route.fare}</div>
+                                <div class="congestion ${route.congestion}">
+                                    ${route.congestion} Traffic
+                                </div>
+                            </div>
+                        </div>
+                        <div class="route-details">
+                            <div class="detail-item">
+                                <strong>⏱️ Duration:</strong> ${route.duration}
+                            </div>
+                            <div class="detail-item">
+                                <strong>📋 Detailed Steps:</strong>
+                            </div>
+                            ${route.steps.map((step, i) => `
+                                <div class="step">
+                                    <span class="step-number">${i + 1}</span>
+                                    ${step}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.add('show');
+            
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // Initialize with popular demo route
+        window.addEventListener('load', function() {
+            document.getElementById('from').value = 'manila';
+            document.getElementById('to').value = 'makati';
+        });
+    </script>
+</body>
+</html>
